@@ -1,7 +1,7 @@
 
 #include "neuron.h"
 
-double Neuron::eta = 0.15;
+double Neuron::eta = 0.3;
 double Neuron::alpha = 0.5;
 
 Neuron::Neuron(unsigned numOutputs, unsigned index) {
@@ -39,7 +39,7 @@ void Neuron::updateInputWeights(Layer& prevLayer) {
 		double oldDeltaWeight = neuron.m_outputWeights[m_index].deltaWeight;
 
 		double newDeltaWeight = //Individual input, magnified by the gradient and train rate
-			eta * neuron.getOutputVal() * m_gradient * alpha * oldDeltaWeight;
+			eta * neuron.getOutputVal() * m_gradient + alpha * oldDeltaWeight;
 
 		neuron.m_outputWeights[m_index].deltaWeight = newDeltaWeight;
 		neuron.m_outputWeights[m_index].weight += newDeltaWeight;
@@ -51,6 +51,7 @@ double Neuron::sumDOW(const Layer& nextLayer) {
 	for (unsigned n = 0; n < nextLayer.size() - 1; ++n) {
 		sum += m_outputWeights[n].weight * nextLayer[n].m_gradient;
 	}
+	return sum;
 }
 
 void Neuron::setOutputVal(double val) {

@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+double Net::m_recentAverageSmoothingFactor = 100.0; // Number of training samples to average over
+
 Net::Net(const std::vector<unsigned int> &topology) {
 	unsigned numLayers = topology.size();
 	for (unsigned layerNum = 0; layerNum < numLayers; ++layerNum) {
@@ -21,9 +23,9 @@ Net::Net(const std::vector<unsigned int> &topology) {
 void Net::feedForward(const std::vector<double> &inputVals) {
 	//std::cout << inputVals.size();
 	//std::cout << this->m_layers[0].size()-1;
-	assert(inputVals.size() == this->m_layers[0].size()-1);
+	//assert(inputVals.size() == this->m_layers[0].size()-1);
 	for (unsigned i = 0; i < inputVals.size(); ++i) {
-		this->m_layers[0][1].setOutputVal(inputVals[i]);
+		this->m_layers[0][i].setOutputVal(inputVals[i]);
 	}
 
 	//Forward propogate
@@ -46,6 +48,10 @@ void Net::backProp(const std::vector<double> &targetVals) {
 	}
 	m_error /= outputLayer.size() - 1;
 	m_error = sqrt(m_error);
+
+	 m_recentAverageError =
+            (m_recentAverageError * m_recentAverageSmoothingFactor + m_error)
+            / (m_recentAverageSmoothingFactor + 1.0);
 
 	//Calculate output layer gradients
 	for (unsigned n = 0; n < outputLayer.size() - 1; ++n) {
