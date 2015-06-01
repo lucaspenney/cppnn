@@ -11,6 +11,7 @@ public:
 	void backProp(const std::vector<double> &targetVals);
 	void getResults(std::vector<double> &resultVals);
 	double getRecentAverageError(void) const { return m_recentAverageError; }
+    void save();
 private:
 	std::vector<Layer> m_layers;
 	double m_error;
