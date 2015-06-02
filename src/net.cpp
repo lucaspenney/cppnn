@@ -1,6 +1,7 @@
 #include "net.h"
 
 #include <iostream>
+#include <fstream>
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
 #include <rapidjson/stringbuffer.h>
@@ -88,7 +89,7 @@ void Net::getResults(std::vector<double> &resultVals) {
 	}
 }
 
-void Net::save() {
+void Net::save(std::string filename) {
 	//Save each neuron to a file
 	rapidjson::StringBuffer s;
 	rapidjson::Writer<rapidjson::StringBuffer> writer(s);
@@ -98,11 +99,13 @@ void Net::save() {
 		writer.StartArray();
 		for (unsigned n = 0; n < layer.size() - 1; ++n) {
 			writer.StartObject();
+			writer.String("weights");
 			writer.StartArray();
 			for (auto w : layer[n].getConnections()) {
 				writer.Double(w.weight);
 			}
 			writer.EndArray();
+			writer.String("deltaWeights");
 			writer.StartArray();
 			for (auto w : layer[n].getConnections()) {
 				writer.Double(w.weight);
@@ -113,4 +116,10 @@ void Net::save() {
 		writer.EndArray();
 	}
 	writer.EndArray();
+	std::string data = s.GetString();
+
+	std::ofstream file;
+	file.open(filename);
+	file << data;
+	file.close();
 }

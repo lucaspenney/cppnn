@@ -1,5 +1,6 @@
 #include <vector>
 #include <cassert>
+#include <string>
 #include "neuron.h"
 
 typedef std::vector<Neuron> Layer;
@@ -11,7 +12,7 @@ public:
 	void backProp(const std::vector<double> &targetVals);
 	void getResults(std::vector<double> &resultVals);
 	double getRecentAverageError(void) const { return m_recentAverageError; }
-    void save();
+    void save(std::string filename);
 private:
 	std::vector<Layer> m_layers;
 	double m_error;

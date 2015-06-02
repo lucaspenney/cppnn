@@ -58,6 +58,6 @@ int main() {
 		for (auto c : resultVals) {
 		std::cout << "I am a neural network and 0.4 + 0.4 = " << c << std::endl;
 	}
-    
+    nn.save("state.json");
 	return 0;
 }
