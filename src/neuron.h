@@ -22,7 +22,9 @@ public:
 	void calculateOutputGradients(double targetVal);
 	void calculateHiddenGradients(const Layer& nextLayer);
 	void updateInputWeights(Layer& prevLayer);
-	std::vector<Connection> getConnections();
+	std::vector<Connection>& getConnections();
+	double getGradient();
+	void setGradient(double gradient);
 private:
 	double sumDOW(const Layer& nextLayer);
 	double m_outputVal;

@@ -13,6 +13,7 @@ public:
 	void getResults(std::vector<double> &resultVals);
 	double getRecentAverageError(void) const { return m_recentAverageError; }
     void save(std::string filename);
+    void load(std::string filename);
 private:
 	std::vector<Layer> m_layers;
 	double m_error;

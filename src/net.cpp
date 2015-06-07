@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include <stdexcept>
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
 #include <rapidjson/stringbuffer.h>
@@ -53,9 +55,9 @@ void Net::backProp(const std::vector<double> &targetVals) {
 	m_error /= outputLayer.size() - 1;
 	m_error = sqrt(m_error);
 
-	 m_recentAverageError =
-            (m_recentAverageError * m_recentAverageSmoothingFactor + m_error)
-            / (m_recentAverageSmoothingFactor + 1.0);
+	m_recentAverageError =
+	(m_recentAverageError * m_recentAverageSmoothingFactor + m_error)
+	/ (m_recentAverageSmoothingFactor + 1.0);
 
 	//Calculate output layer gradients
 	for (unsigned n = 0; n < outputLayer.size() - 1; ++n) {
@@ -94,7 +96,7 @@ void Net::save(std::string filename) {
 	rapidjson::StringBuffer s;
 	rapidjson::Writer<rapidjson::StringBuffer> writer(s);
 	writer.StartArray();
-	for (unsigned layerNum = this->m_layers.size() - 1; layerNum > 0; --layerNum) {
+	for (unsigned layerNum = 0; layerNum < this->m_layers.size() - 1; ++layerNum) {
 		Layer& layer = m_layers[layerNum];
 		writer.StartArray();
 		for (unsigned n = 0; n < layer.size() - 1; ++n) {
@@ -111,6 +113,10 @@ void Net::save(std::string filename) {
 				writer.Double(w.weight);
 			}
 			writer.EndArray();
+			writer.String("gradient");
+			writer.Double(layer[n].getGradient());
+			writer.String("output");
+			writer.Double(layer[n].getOutputVal());
 			writer.EndObject();
 		}
 		writer.EndArray();
@@ -122,4 +128,39 @@ void Net::save(std::string filename) {
 	file.open(filename);
 	file << data;
 	file.close();
+}
+
+void Net::load(std::string filename) {
+	std::fstream file;
+	file.open(filename);
+	std::stringstream buffer;
+	buffer << file.rdbuf();
+	std::string data = buffer.str();
+
+	//Parse json value and load it into network
+	rapidjson::Document d;
+	d.Parse(data.c_str());
+	rapidjson::Value& s = d;
+	for (rapidjson::SizeType i = 0; i < s.Size(); i++) {
+		try {
+			Layer& layer = m_layers[i];
+			for (rapidjson::SizeType l = 0; l < d[i].Size(); l++) {
+				std::vector<Connection>& connections = layer[l].getConnections();
+				for (rapidjson::SizeType k = 0; k < d[i][l]["weights"].Size(); k++) {
+					double val = d[i][l]["weights"][k].GetDouble();
+					connections[k].weight = val;
+				}
+				for (rapidjson::SizeType k = 0; k < d[i][l]["deltaWeights"].Size(); k++) {
+					double val = d[i][l]["deltaWeights"][k].GetDouble();
+					connections[k].deltaWeight = val;
+				}
+				layer[l].setGradient(d[i][l]["gradient"].GetDouble());
+				layer[l].setOutputVal(d[i][l]["output"].GetDouble());
+			}
+		} catch(const std::out_of_range& e) {
+			std::cout << "error loading in state";
+		}
+
+	}
+	m_layers.back().back().setOutputVal(1.0);
 }

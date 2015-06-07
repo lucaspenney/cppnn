@@ -16,12 +16,36 @@ double frand(double fMin, double fMax)
 int main() {
 	srand(time(NULL));
 	std::vector<unsigned int> topology;
+
+	/*
 	topology.push_back(2);
 	topology.push_back(1);
 	topology.push_back(5);
 	topology.push_back(5);
 	topology.push_back(1);
+	*/
+
+	topology.push_back(2);
+	topology.push_back(10);
+	topology.push_back(5);
+	topology.push_back(1);
 	Net nn(topology);
+
+	nn.load("state.json");
+
+	/*
+	//Now test the previously trained data with some non-training data
+	std::vector<double> inputVals2;
+	inputVals2 = { 0.4, 0.4};
+	nn.feedForward(inputVals2);
+	std::vector<double> resultVals2;
+
+	nn.getResults(resultVals2);
+		for (auto c : resultVals2) {
+		std::cout << "I am a neural network and 0.4 + 0.4 = " << c << std::endl;
+	}
+	return 0;
+	*/
 
 	int i = 0;
 	while (i < 10000) {
@@ -33,11 +57,11 @@ int main() {
 		nn.feedForward(inputVals);
 		std::vector<double> targetVals;
 		targetVals = {x + y};
-		
+
 		std::vector<double> resultVals;
 
 		nn.getResults(resultVals);
-		
+
 		for (auto c : resultVals) {
 			std::cout << x << " " << y << " should be " <<(x + y) << " actual is " << c <<  std::endl;
 		}
