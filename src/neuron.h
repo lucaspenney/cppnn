@@ -24,6 +24,7 @@ public:
 	void updateInputWeights(Layer& prevLayer);
 	std::vector<Connection>& getConnections();
 	double getGradient();
+	unsigned int getIndex();
 	void setGradient(double gradient);
 private:
 	double sumDOW(const Layer& nextLayer);

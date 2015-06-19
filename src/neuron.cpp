@@ -71,11 +71,15 @@ double Neuron::transferFunctionDerivative(double x) {
 }
 
 std::vector<Connection>& Neuron::getConnections() {
-	return m_outputWeights;
+	return this->m_outputWeights;
 }
 
 double Neuron::getGradient() {
 	return this->m_gradient;
+}
+
+unsigned int Neuron::getIndex(){
+	return this->m_index;
 }
 
 void Neuron::setGradient(double gradient) {

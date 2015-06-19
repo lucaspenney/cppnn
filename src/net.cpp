@@ -104,19 +104,20 @@ void Net::save(std::string filename) {
 			writer.String("weights");
 			writer.StartArray();
 			for (auto w : layer[n].getConnections()) {
+				writer.StartObject();
+				writer.String("weight");
 				writer.Double(w.weight);
-			}
-			writer.EndArray();
-			writer.String("deltaWeights");
-			writer.StartArray();
-			for (auto w : layer[n].getConnections()) {
-				writer.Double(w.weight);
+				writer.String("deltaWeight");
+				writer.Double(w.deltaWeight);
+				writer.EndObject();
 			}
 			writer.EndArray();
 			writer.String("gradient");
 			writer.Double(layer[n].getGradient());
 			writer.String("output");
 			writer.Double(layer[n].getOutputVal());
+			writer.String("index");
+			writer.Uint(layer[n].getIndex());
 			writer.EndObject();
 		}
 		writer.EndArray();
@@ -142,25 +143,18 @@ void Net::load(std::string filename) {
 	d.Parse(data.c_str());
 	rapidjson::Value& s = d;
 	for (rapidjson::SizeType i = 0; i < s.Size(); i++) {
-		try {
-			Layer& layer = m_layers[i];
-			for (rapidjson::SizeType l = 0; l < d[i].Size(); l++) {
-				std::vector<Connection>& connections = layer[l].getConnections();
-				for (rapidjson::SizeType k = 0; k < d[i][l]["weights"].Size(); k++) {
-					double val = d[i][l]["weights"][k].GetDouble();
-					connections[k].weight = val;
-				}
-				for (rapidjson::SizeType k = 0; k < d[i][l]["deltaWeights"].Size(); k++) {
-					double val = d[i][l]["deltaWeights"][k].GetDouble();
-					connections[k].deltaWeight = val;
-				}
-				layer[l].setGradient(d[i][l]["gradient"].GetDouble());
-				layer[l].setOutputVal(d[i][l]["output"].GetDouble());
+		Layer& layer = m_layers[i];
+		for (rapidjson::SizeType l = 0; l < d[i].Size(); l++) {
+			std::vector<Connection>& connections = layer[l].getConnections();
+			for (rapidjson::SizeType k = 0; k < d[i][l]["weights"].Size(); k++) {
+				double weight  = d[i][l]["weights"][k]["weight"].GetDouble();
+				double deltaWeight = d[i][l]["weights"][k]["deltaWeight"].GetDouble();
+				connections[k].weight = weight;
+				connections[k].deltaWeight = deltaWeight;
 			}
-		} catch(const std::out_of_range& e) {
-			std::cout << "error loading in state";
+			layer[l].setGradient(d[i][l]["gradient"].GetDouble());
+			layer[l].setOutputVal(d[i][l]["output"].GetDouble());
 		}
-
 	}
 	m_layers.back().back().setOutputVal(1.0);
 }

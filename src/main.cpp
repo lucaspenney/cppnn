@@ -33,11 +33,12 @@ int main() {
 
 	nn.load("state.json");
 
-	/*
+	
 	//Now test the previously trained data with some non-training data
 	std::vector<double> inputVals2;
-	inputVals2 = { 0.4, 0.4};
-	nn.feedForward(inputVals2);
+	inputVals2 = { (double)0.4, (double)0.4};
+	//nn.feedForward(inputVals2);
+	
 	std::vector<double> resultVals2;
 
 	nn.getResults(resultVals2);
@@ -45,7 +46,7 @@ int main() {
 		std::cout << "I am a neural network and 0.4 + 0.4 = " << c << std::endl;
 	}
 	return 0;
-	*/
+	
 
 	int i = 0;
 	while (i < 10000) {
