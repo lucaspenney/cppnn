@@ -32,21 +32,28 @@ int main() {
 	Net nn(topology);
 
 	nn.load("state.json");
+	nn.save("state2.json");
+	for (auto e : nn.getLayers()) {
+		for (auto l : e) {
+			for (auto c : l.getConnections()) {
+				//std::cout << c.weight << std::endl;
+			}
+		}
+	}
 
-	
 	//Now test the previously trained data with some non-training data
 	std::vector<double> inputVals2;
 	inputVals2 = { (double)0.4, (double)0.4};
-	//nn.feedForward(inputVals2);
-	
+	nn.feedForward(inputVals2);
+
 	std::vector<double> resultVals2;
 
 	nn.getResults(resultVals2);
 		for (auto c : resultVals2) {
 		std::cout << "I am a neural network and 0.4 + 0.4 = " << c << std::endl;
 	}
+
 	return 0;
-	
 
 	int i = 0;
 	while (i < 10000) {
@@ -70,8 +77,10 @@ int main() {
         std::cout << "Net recent average error: "
                 << nn.getRecentAverageError() << std::endl;
         nn.backProp(targetVals);
+
 		i++;
 	}
+	nn.save("state.json");
 
 	//Now test it with some non-training data
 	std::vector<double> inputVals;
@@ -83,6 +92,5 @@ int main() {
 		for (auto c : resultVals) {
 		std::cout << "I am a neural network and 0.4 + 0.4 = " << c << std::endl;
 	}
-    nn.save("state.json");
 	return 0;
 }

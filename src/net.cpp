@@ -91,6 +91,10 @@ void Net::getResults(std::vector<double> &resultVals) {
 	}
 }
 
+std::vector<Layer>& Net::getLayers() {
+	return this->m_layers;
+}
+
 void Net::save(std::string filename) {
 	//Save each neuron to a file
 	rapidjson::StringBuffer s;
@@ -132,6 +136,18 @@ void Net::save(std::string filename) {
 }
 
 void Net::load(std::string filename) {
+	std::cout << "Loading state" << std::endl;
+	for (unsigned layerNum = 0; layerNum < this->m_layers.size(); layerNum++) {
+		Layer& lay = m_layers[layerNum];
+		for (unsigned n = 0; n < lay.size() - 1; n++) {
+			std::vector<Connection>& connections = lay[n].getConnections();
+			//Set all neuron weights to zero (so if there's a problem, we don't have random data getting in the way)
+			for (auto &e : connections) {
+				e.weight = 0.0;
+				e.deltaWeight = 0.0;
+			}
+		}
+	}
 	std::fstream file;
 	file.open(filename);
 	std::stringstream buffer;
@@ -143,18 +159,23 @@ void Net::load(std::string filename) {
 	d.Parse(data.c_str());
 	rapidjson::Value& s = d;
 	for (rapidjson::SizeType i = 0; i < s.Size(); i++) {
+		std::cout << "layer num " << i;
 		Layer& layer = m_layers[i];
+
 		for (rapidjson::SizeType l = 0; l < d[i].Size(); l++) {
 			std::vector<Connection>& connections = layer[l].getConnections();
-			for (rapidjson::SizeType k = 0; k < d[i][l]["weights"].Size(); k++) {
+			for (rapidjson::SizeType k = 0; k < d[i][l]["weights"].Size(); ++k) {
+				//std::cout << k << std::endl;
+				int size = connections.size() - 1;
 				double weight  = d[i][l]["weights"][k]["weight"].GetDouble();
 				double deltaWeight = d[i][l]["weights"][k]["deltaWeight"].GetDouble();
 				connections[k].weight = weight;
+				//std::cout << "setting to weight" << weight << std::endl;;
 				connections[k].deltaWeight = deltaWeight;
 			}
 			layer[l].setGradient(d[i][l]["gradient"].GetDouble());
 			layer[l].setOutputVal(d[i][l]["output"].GetDouble());
 		}
 	}
-	m_layers.back().back().setOutputVal(1.0);
+	//m_layers.back().back().setOutputVal(1.0);
 }
