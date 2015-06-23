@@ -34,9 +34,9 @@ int main() {
 	nn.load("state.json");
 	nn.save("state2.json");
 	for (auto e : nn.getLayers()) {
-		for (auto l : e) {
-			for (auto c : l.getConnections()) {
-				//std::cout << c.weight << std::endl;
+		for (auto l : *e) {
+			for (auto c : (&l)->getConnections()) {
+				std::cout << c->weight << std::endl;
 			}
 		}
 	}

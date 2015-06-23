@@ -70,8 +70,12 @@ double Neuron::transferFunctionDerivative(double x) {
 	return 1.0 - x * x; //Rough approximatation of derivative of hyperbolic tangent
 }
 
-std::vector<Connection>& Neuron::getConnections() {
-	return this->m_outputWeights;
+std::vector<Connection*> Neuron::getConnections() {
+	std::vector<Connection*> vals;
+	for (auto w: this->m_outputWeights) {
+		vals.push_back(&w);
+	}
+	return vals;
 }
 
 double Neuron::getGradient() {
