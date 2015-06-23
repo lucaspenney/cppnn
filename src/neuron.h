@@ -22,7 +22,7 @@ public:
 	void calculateOutputGradients(double targetVal);
 	void calculateHiddenGradients(const Layer& nextLayer);
 	void updateInputWeights(Layer& prevLayer);
-	std::vector<Connection*> getConnections();
+	std::vector<Connection>& getConnections();
 	double getGradient();
 	unsigned int getIndex();
 	void setGradient(double gradient);

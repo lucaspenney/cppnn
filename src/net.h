@@ -12,7 +12,7 @@ public:
 	void backProp(const std::vector<double> &targetVals);
 	void getResults(std::vector<double> &resultVals);
 	double getRecentAverageError(void) const { return m_recentAverageError; }
-	std::vector<Layer*> getLayers();
+	std::vector<Layer>& getLayers();
     void save(std::string filename);
     void load(std::string filename);
 private:

@@ -31,15 +31,8 @@ int main() {
 	topology.push_back(1);
 	Net nn(topology);
 
+
 	nn.load("state.json");
-	nn.save("state2.json");
-	for (auto e : nn.getLayers()) {
-		for (auto l : *e) {
-			for (auto c : (&l)->getConnections()) {
-				std::cout << c->weight << std::endl;
-			}
-		}
-	}
 
 	//Now test the previously trained data with some non-training data
 	std::vector<double> inputVals2;
@@ -52,7 +45,6 @@ int main() {
 		for (auto c : resultVals2) {
 		std::cout << "I am a neural network and 0.4 + 0.4 = " << c << std::endl;
 	}
-
 	return 0;
 
 	int i = 0;
