@@ -4,16 +4,17 @@
 #include <cstdlib>
 #include <cassert>
 #include <cmath>
+#include <unistd.h>
 
 #include "net.h"
 
 double frand(double fMin, double fMax)
 {
-    double f = (double)rand() / RAND_MAX;
-    return fMin + f * (fMax - fMin);
+	double f = (double)rand() / RAND_MAX;
+	return fMin + f * (fMax - fMin);
 }
 
-int main() {
+int main(int argc, char* argv[]) {
 	srand(time(NULL));
 	std::vector<unsigned int> topology;
 
@@ -42,7 +43,7 @@ int main() {
 	std::vector<double> resultVals2;
 
 	nn.getResults(resultVals2);
-		for (auto c : resultVals2) {
+	for (auto c : resultVals2) {
 		std::cout << "I am a neural network and 0.4 + 0.4 = " << c << std::endl;
 	}
 	return 0;
@@ -66,9 +67,9 @@ int main() {
 			std::cout << x << " " << y << " should be " <<(x + y) << " actual is " << c <<  std::endl;
 		}
 		    // Report how well the training is working, average over recent samples:
-        std::cout << "Net recent average error: "
-                << nn.getRecentAverageError() << std::endl;
-        nn.backProp(targetVals);
+		std::cout << "Net recent average error: "
+		<< nn.getRecentAverageError() << std::endl;
+		nn.backProp(targetVals);
 
 		i++;
 	}
@@ -81,7 +82,7 @@ int main() {
 	std::vector<double> resultVals;
 
 	nn.getResults(resultVals);
-		for (auto c : resultVals) {
+	for (auto c : resultVals) {
 		std::cout << "I am a neural network and 0.4 + 0.4 = " << c << std::endl;
 	}
 	return 0;

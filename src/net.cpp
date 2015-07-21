@@ -159,3 +159,30 @@ void Net::load(std::string filename) {
 	}
 	m_layers.back().back().setOutputVal(1.0);
 }
+
+void Net::trainFromFile(std::string filename) {
+	std::cout << "Loading training data from " << filename << std::endl;
+	std::fstream file;
+	file.open(filename);
+	std::stringstream buffer;
+	buffer << file.rdbuf();
+	std::string data = buffer.str();
+
+	rapidjson::Document d;
+	d.Parse(data.c_str());
+	rapidjson::Value& s = d;
+	for (rapidjson::SizeType i = 0; i < s.Size(); i++) {
+		std::vector<double> inputs;
+		std::vector<double> outputs;
+		//TODO: Validate the number of layers that each training data set is equal to the number of layers in the actual network
+		for (rapidjson::SizeType k = 0; k < d[i]["inputs"].Size(); k++) {
+			inputs.push_back(d[i]["inputs"][k].GetDouble());
+		}
+		for (rapidjson::SizeType k = 0; k < d[i]["outputs"].Size(); k++) {
+			outputs.push_back(d[i]["outputs"][k].GetDouble());
+		}
+		//Train the network using this data set
+		this->feedForward(inputs);
+		this->backProp(outputs);
+	}
+}

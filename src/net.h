@@ -15,6 +15,7 @@ public:
 	std::vector<Layer>& getLayers();
     void save(std::string filename);
     void load(std::string filename);
+    void trainFromFile(std::string filename);
 private:
 	std::vector<Layer> m_layers;
 	double m_error;
