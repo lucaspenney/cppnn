@@ -174,15 +174,25 @@ void Net::trainFromFile(std::string filename) {
 	for (rapidjson::SizeType i = 0; i < s.Size(); i++) {
 		std::vector<double> inputs;
 		std::vector<double> outputs;
-		//TODO: Validate the number of layers that each training data set is equal to the number of layers in the actual network
 		for (rapidjson::SizeType k = 0; k < d[i]["inputs"].Size(); k++) {
 			inputs.push_back(d[i]["inputs"][k].GetDouble());
+			if (d[i]["inputs"].Size() > this->m_layers.front().size()) {
+				std::cout << "Training data contains too many input values for size of network input layer" << std::endl;
+				//TODO: This should be throwing an exception, as the network *can not* function (especially after) it's tried to tdo this
+				return;
+			}
 		}
 		for (rapidjson::SizeType k = 0; k < d[i]["outputs"].Size(); k++) {
+			if (d[i]["inputs"].Size() > this->m_layers.back().size()) {
+				//TODO: This should be asserting that these are correct before attempting (throwing an exception)
+				std::cout << "Training data contains too many output values for size of network output layer" << std::endl;
+				return;
+			}
 			outputs.push_back(d[i]["outputs"][k].GetDouble());
 		}
 		//Train the network using this data set
 		this->feedForward(inputs);
 		this->backProp(outputs);
+		std::cout << "Training Error: " << m_recentAverageError << std::endl;
 	}
 }
