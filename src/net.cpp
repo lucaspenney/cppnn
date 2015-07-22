@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
+#include <assert.h>
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
 #include <rapidjson/stringbuffer.h>
@@ -140,6 +141,16 @@ void Net::load(std::string filename) {
 	buffer << file.rdbuf();
 	std::string data = buffer.str();
 
+	if (!file.is_open()) {
+		//File didn't exist, create it
+		std::ofstream ofile(filename);
+		if (ofile.is_open()) {
+			ofile << "[]";
+			ofile.close();
+		}
+		data = "[]";
+	}
+
 	//Parse json value and load it into network
 	rapidjson::Document d;
 	d.Parse(data.c_str());
@@ -175,19 +186,11 @@ void Net::trainFromFile(std::string filename) {
 		std::vector<double> inputs;
 		std::vector<double> outputs;
 		for (rapidjson::SizeType k = 0; k < d[i]["inputs"].Size(); k++) {
+			assert(d[i]["inputs"].Size() == this->m_layers.front().size() - 1 && "Training data contains too many input values for size of network input layer");
 			inputs.push_back(d[i]["inputs"][k].GetDouble());
-			if (d[i]["inputs"].Size() > this->m_layers.front().size()) {
-				std::cout << "Training data contains too many input values for size of network input layer" << std::endl;
-				//TODO: This should be throwing an exception, as the network *can not* function (especially after) it's tried to tdo this
-				return;
-			}
 		}
 		for (rapidjson::SizeType k = 0; k < d[i]["outputs"].Size(); k++) {
-			if (d[i]["inputs"].Size() > this->m_layers.back().size()) {
-				//TODO: This should be asserting that these are correct before attempting (throwing an exception)
-				std::cout << "Training data contains too many output values for size of network output layer" << std::endl;
-				return;
-			}
+			assert(d[i]["outputs"].Size() == this->m_layers.back().size() - 1 && "Training data contains too many output values for size of network output layer");
 			outputs.push_back(d[i]["outputs"][k].GetDouble());
 		}
 		//Train the network using this data set

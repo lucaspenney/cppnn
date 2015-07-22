@@ -48,7 +48,6 @@ int main(int argc, char* argv[]) {
 	for (int i = 0; i < parse.optionsCount(); ++i)
 	{
 		option::Option& opt = buffer[i];
-		fprintf(stdout, "Argument #%d is ", i);
 		switch (opt.index())
 		{
 			case TRAIN:
@@ -81,55 +80,22 @@ int main(int argc, char* argv[]) {
 		nn.trainFromFile(trainingFile);
 	}
 
-	//Now test the previously trained data with some non-training data
-	std::vector<double> inputVals2;
-	inputVals2 = { (double)0.4, (double)0.4};
-	nn.feedForward(inputVals2);
-
-	std::vector<double> resultVals2;
-
-	nn.getResults(resultVals2);
-	for (auto c : resultVals2) {
-		std::cout << "Inputs: 0.4 | 0.4" << std::endl;
-		std::cout << "Outputs: " << c << std::endl;
-		std::cout << "Average Error: " << nn.getRecentAverageError() << std::endl;
+	if (stateFile.length() > 1) {
+		nn.save(stateFile);
 	}
-	return 0;
-
-	int i = 0;
-	while (i < 10000) {
-		std::vector<double> inputVals;
-		double x = frand(0.2, 0.5);
-		double y = frand(0.2, 0.5);
-
-		inputVals = {(double)x, (double)y};
-		nn.feedForward(inputVals);
-		std::vector<double> targetVals;
-		targetVals = {x + y};
-
-		std::vector<double> resultVals;
-
-		nn.getResults(resultVals);
-
-		for (auto c : resultVals) {
-			std::cout << x << " " << y << " should be " <<(x + y) << " actual is " << c <<  std::endl;
-		}
-	    //Report how well the training is working, average over recent samples:
-		std::cout << "Net recent average error: " << nn.getRecentAverageError() << std::endl;
-		nn.backProp(targetVals);
-		i++;
-	}
-	nn.save("state.json");
 
 	//Now test it with some non-training data
 	std::vector<double> inputVals;
-	inputVals = { 0.4, 0.4};
+	inputVals = { 1, 0};
 	nn.feedForward(inputVals);
 	std::vector<double> resultVals;
 
 	nn.getResults(resultVals);
 	for (auto c : resultVals) {
-		std::cout << "I am a neural network and 0.4 + 0.4 = " << c << std::endl;
+		std::cout << "Inputs: 1 | 0" << std::endl;
+		std::cout << "Outputs: " << c << std::endl;
+		std::cout << "Average Error: " << nn.getRecentAverageError() << std::endl;
 	}
+
 	return 0;
 }

@@ -9,10 +9,10 @@ Math.tanh = Math.tanh || function(x) {
 }
 
 var r = [];
-for (var i = 0; i < 10000; i++) {
-	var i1 = Math.random() * 0.4;
-	var i2 = Math.random() * 0.4;
-	var o = i1 + i2;
+for (var i = 0; i < 100000; i++) {
+	var i1 = (Math.random() > 0.5) ? 0 : 1;
+	var i2 = (Math.random() > 0.5) ? 0 : 1;
+	var o = i1 ^ i2;
 	r.push({
 		inputs: [i1, i2],
 		outputs: [o]
